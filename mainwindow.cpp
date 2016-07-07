@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "QMessageBox"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -8,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //Инициализация полей
     alpha = new menu();
+    antHill = new AntHill("anthill");
+    world = new World();
+    add = new SectorDialog();
     //Установка связей
     connect(alpha,SIGNAL(loadSig()),this,SLOT(loadS()));
     connect(alpha,SIGNAL(saveSig()),this,SLOT(saveS()));
@@ -15,14 +19,42 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(alpha,SIGNAL(loadSig()),this,SLOT(loadS()));
     connect(alpha,SIGNAL(overSig()),this,SLOT(overS()));
     connect(alpha,SIGNAL(closed()),this,SLOT(closeMenu()));
-
+    foreach (auto a, antHill->getButtons()) {
+        connect(a,SIGNAL(clicked(int)),this,SLOT(sectorAntHill(int)));
+    }
+    connect(add,SIGNAL(sig(int,int)),this,SLOT(addSectAH(int,int)));
     connect(ui->menu,SIGNAL(clicked()),this,SLOT(openMenu()));
     connect(ui->step,SIGNAL(clicked()),this,SLOT(nextStep()));
     connect(ui->viewMode,SIGNAL(clicked()),this,SLOT(changeViewMode()));
 
-    world = new AntHill("suka");
-    ui->generalScene->setScene(world->getScene());
+    ui->generalScene->setScene(antHill->getScene());
     disableButtons();
+}
+
+void MainWindow::addSectAH(int a,int b){
+    switch (a) {
+    case 0:
+        antHill->addSector(STORAGE,b);
+        break;
+    case 1:
+        antHill->addSector(POSTERITY,b);
+        break;
+    case 2:
+        antHill->addSector(DEFENSE,b);
+    }
+}
+
+void MainWindow::sectorAntHill(int a){
+    if(antHill->getButtons()[a]->onBusy()){
+
+    }else if(antHill->getMat()>=5){
+        add->add(a);
+        add->show();
+    }else{
+        (new QMessageBox(QMessageBox::Warning,"Нет ресурсов","Не хватает " +
+                         QString::number(5-antHill->getMat())+
+                         " ресурсов на постройку ячейки муравейника."))->show();
+    }
 }
 
 void MainWindow::changeViewMode(){
@@ -32,7 +64,7 @@ void MainWindow::changeViewMode(){
 
 void MainWindow::nextStep(){
     //Новый шаг симуляции
-    world->nextStep();
+    antHill->nextStep();
 }
 
 void MainWindow::enableButtons(){
@@ -64,8 +96,7 @@ void MainWindow::newS(){
 
 void MainWindow::overS(){
     //Завершение всей программы
-    alpha->close();
-    this->close();
+    exit(0);
 }
 
 void MainWindow::openMenu(){

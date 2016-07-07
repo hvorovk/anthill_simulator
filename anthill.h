@@ -4,6 +4,7 @@
 */
 #define ANTHILL_H
 #include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -12,46 +13,77 @@
 #include <groupant.h>
 #include <sectordialog.h>
 
-class MapItemAH: public QGraphicsEllipseItem{
-private:
-    SectorDialog *dialog;
-public:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    MapItemAH():QGraphicsEllipseItem(){
-    }
-    MapItemAH(int x,int y,int w,int h, QColor a = Qt::red):QGraphicsEllipseItem(x,y,w,h){
-        setAcceptHoverEvents(true);
-        setOpacity(0.6);
-        setBrush(*new QBrush(a));
-    }
-};
-
-
-const int MAP_SIZE_W = 11, MAP_SIZE_H = 7;
-
 enum TypeOfSector{
     //Типы секторов
     STORAGE = 0,
     POSTERITY = 1,
     QUEEN = 2,
-    DEFENSE = 3
+    DEFENSE = 3,
+    NONE
+};
+
+const int MAP_SIZE_W = 12, MAP_SIZE_H = 8, COST_SECTOR = 5;
+
+class MapItemAH:public QObject, public QGraphicsEllipseItem{
+    Q_OBJECT
+    /*
+     * Если ячейка белая то она свободна, если хранилище то синяя,
+     * если родильня то зеленая, защита красная, королева желтая
+    */
+signals:
+    //передает позицию
+    clicked(int p);
+private:
+    int id;
+    QColor alpha;
+    bool busy;
+public:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    MapItemAH():QGraphicsEllipseItem(){
+    }
+
+    void setColor(TypeOfSector);
+
+    void setBusy(bool b){
+        busy = b;
+    }
+
+    bool onBusy(){return busy;}
+
+    MapItemAH(int x,int y,int w,int h, int i = 0, QColor a = Qt::white):QGraphicsEllipseItem(x,y,w,h){
+        setAcceptHoverEvents(true);
+        busy = false;
+        alpha = a;
+        setOpacity(0.6);
+        setBrush(*new QBrush(a));
+        id = i;
+    }
 };
 
 struct MapOfAntHill{
     //Карта муравейника
     QVector<TypeOfSector> map;
     QVector<QPair<Ant*,int> > antLocation;
+    QVector<MapItemAH*> items;
     int sectorCount;
+
     MapOfAntHill(AntQueen *a,GroupAnt *b){
         sectorCount = 2;
-        map.append(QUEEN);
-        map.append(POSTERITY);
         antLocation.append(QPair<Ant*,int>(a,0));
         antLocation.append(QPair<Ant*,int>(b,1));
+        for(int i = 0; i < MAP_SIZE_H; i++){
+            for(int j = 0; j < MAP_SIZE_W; j++){
+                items.append(new MapItemAH(50*j, 50*i,50,50,i*12+j));
+                map.append(NONE);
+            }
+            map[0] = QUEEN;
+            map[1] = POSTERITY;
+        }
+        items[0]->setBusy(true); items[1]->setBusy(true);
+        items[0]->setColor(map[0]); items[1]->setColor(map[1]);
     }
 };
 
@@ -67,16 +99,19 @@ private:
     int storeAll, level;
     QPair<double,double>  health;
     double armor;
-    MapOfAntHill *mapAntHill;
+    MapOfAntHill *map;
     QVector<GroupAnt*> freeAnts;
 public:
     AntHill(QString);
     QGraphicsScene* getScene(){
         return scene;
     }
-    bool addSector(TypeOfSector type);
+    QVector<MapItemAH*> getButtons(){return map->items;}
+    void addSector(TypeOfSector type, int p);
 
     int attack(int);
+
+    int getMat(){ return storeMaterials.second;}
 
     int armorEffect(int attack){
         return (attack*sqrt(armor*10))/100;

@@ -13,17 +13,19 @@ AntHill::AntHill(QString n){
     level = 1;
     armor = 1;
     freeAnts.append(ants[0]);
-    mapAntHill = new MapOfAntHill(queen,ants[1]);
+    map = new MapOfAntHill(queen,ants[1]);
     scene->addPixmap(QPixmap(":/img/data/img/sceneback.jpg"));
-    auto a = new MapItemAH(0,0,50,50);
-    scene->addItem(a);
+    foreach (auto a, map->items) {
+        scene->addItem(a);
+    }
 }
 
-bool AntHill::addSector(TypeOfSector type){
-    if(mapAntHill->sectorCount == MAP_SIZE_H * MAP_SIZE_W) return false;
-    mapAntHill->map.append(type);
-    mapAntHill->sectorCount += 1;
-    return true;
+void AntHill::addSector(TypeOfSector type, int p){
+    storeMaterials.second -=5;
+    map->map[p] = type;
+    map->items[p]->setBusy(true);
+    map->items[p]->setColor(type);
+    map->sectorCount += 1;
 }
 
 int AntHill::attack(int attack){
@@ -41,14 +43,17 @@ void AntHill::nextStep(){
 
 void MapItemAH::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(event->button() == Qt::LeftButton){
-        setBrush(*new QBrush(*new QColor(200,0,0)));
-        dialog = new SectorDialog();
-        dialog->show();
+       if(alpha == Qt::white) setBrush(*new QBrush(Qt::gray));
+       else if(alpha == Qt::yellow) setBrush(*new QBrush(QColor(150,150,0)));
+       else if(alpha == Qt::blue) setBrush(*new QBrush(QColor(0,0,150)));
+       else if(alpha == Qt::green) setBrush(*new QBrush(QColor(0,150,0)));
+       else setBrush(*new QBrush(QColor(150,0,0)));
     }
 }
 
 void MapItemAH::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    setBrush(*new QBrush(*new QColor(255,0,0)));
+    setBrush(*new QBrush(alpha));
+    emit clicked(id);
 }
 
 void MapItemAH::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
@@ -59,6 +64,10 @@ void MapItemAH::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
    setOpacity(0.4);
 }
 
-void MapItemAH::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
-
+void MapItemAH::setColor(TypeOfSector a){
+    if(a == QUEEN) alpha = Qt::yellow;
+    else if(a == POSTERITY) alpha = Qt::green;
+    else if(a == STORAGE) alpha = Qt::blue;
+    else alpha = Qt::red;
+    setBrush(*new QBrush(alpha));
 }

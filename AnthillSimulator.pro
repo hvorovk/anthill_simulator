@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     antqueen.cpp \
     antmale.cpp \
     antfemale.cpp \
-    sectordialog.cpp
+    sectordialog.cpp \
+    info.cpp
 
 HEADERS  += mainwindow.h \
     menu.h \
@@ -33,11 +34,13 @@ HEADERS  += mainwindow.h \
     antqueen.h \
     antmale.h \
     antfemale.h \
-    sectordialog.h
+    sectordialog.h \
+    info.h
 
 FORMS    += mainwindow.ui \
     menu.ui \
-    sectordialog.ui
+    sectordialog.ui \
+    info.ui
 
 RESOURCES += \
     resource.qrc

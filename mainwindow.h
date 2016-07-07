@@ -9,6 +9,8 @@
 #include <QGraphicsScene>
 #include "world.h"
 #include "menu.h"
+#include "sectordialog.h"
+#include "info.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,6 +28,8 @@ public slots:
     void closeMenu();
     void nextStep();
     void changeViewMode();
+    void sectorAntHill(int a);
+    void addSectAH(int, int );
 signals:
 
 public:
@@ -35,7 +39,9 @@ public:
     ~MainWindow();
 
 private:
-    AntHill *world;
+    SectorDialog *add;
+    AntHill *antHill;
+    World *world;
     menu *alpha;
     Ui::MainWindow *ui;
 };
