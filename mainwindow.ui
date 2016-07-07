@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
-    <height>484</height>
+    <width>622</width>
+    <height>481</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,8 +29,14 @@
      <widget class="QGraphicsView" name="generalScene">
       <property name="minimumSize">
        <size>
-        <width>600</width>
-        <height>400</height>
+        <width>604</width>
+        <height>403</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>604</width>
+        <height>403</height>
        </size>
       </property>
      </widget>

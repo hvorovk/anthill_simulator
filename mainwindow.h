@@ -6,7 +6,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include "world.h"
 #include "menu.h"
@@ -36,6 +35,7 @@ public:
     ~MainWindow();
 
 private:
+    AntHill *world;
     menu *alpha;
     Ui::MainWindow *ui;
 };

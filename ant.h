@@ -15,7 +15,7 @@ protected:
     double heathRecoveryOnStep;
 public:
     int attacked(int count){
-        //Метот отображающий нападение
+        //Метод отображающий нападение
         //Наносим урон, если фатально то говорим об этом и
         //Возвращаем ответный урон
         health.second -= count;

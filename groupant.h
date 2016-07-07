@@ -17,8 +17,11 @@ class GroupAnt:public Ant
 private:
     constexpr static int MAX_AGE = 24, BASE_HP = 0.1, REGEN = 0.1;
     int countOfAnts;
+    bool where;
     Type type;
 public:
+    void setWhere(bool a){where = a;}
+    bool onAntHill(){return where;}
     GroupAnt(QString name, Type type);
     Type getType(){return type;}
     bool checkAge();

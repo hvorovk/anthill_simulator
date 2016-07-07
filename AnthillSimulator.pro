@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = AnthillSimulator
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -20,7 +21,8 @@ SOURCES += main.cpp\
     groupant.cpp \
     antqueen.cpp \
     antmale.cpp \
-    antfemale.cpp
+    antfemale.cpp \
+    sectordialog.cpp
 
 HEADERS  += mainwindow.h \
     menu.h \
@@ -30,10 +32,12 @@ HEADERS  += mainwindow.h \
     groupant.h \
     antqueen.h \
     antmale.h \
-    antfemale.h
+    antfemale.h \
+    sectordialog.h
 
 FORMS    += mainwindow.ui \
-    menu.ui
+    menu.ui \
+    sectordialog.ui
 
 RESOURCES += \
     resource.qrc

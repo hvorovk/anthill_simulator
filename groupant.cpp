@@ -7,6 +7,7 @@ GroupAnt::GroupAnt(QString n,Type type){
     name = n;
     life = true;
     this->type = type;
+    where = true;
 }
 
 bool GroupAnt::checkAge(){

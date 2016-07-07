@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->step,SIGNAL(clicked()),this,SLOT(nextStep()));
     connect(ui->viewMode,SIGNAL(clicked()),this,SLOT(changeViewMode()));
 
+    world = new AntHill("suka");
+    ui->generalScene->setScene(world->getScene());
     disableButtons();
 }
 
@@ -30,6 +32,7 @@ void MainWindow::changeViewMode(){
 
 void MainWindow::nextStep(){
     //Новый шаг симуляции
+    world->nextStep();
 }
 
 void MainWindow::enableButtons(){
