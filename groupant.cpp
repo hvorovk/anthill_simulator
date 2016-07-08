@@ -8,6 +8,22 @@ GroupAnt::GroupAnt(QString n,Type type){
     life = true;
     this->type = type;
     where = true;
+    maxResource = MAX_RES;
+    countOfAnts = 10000;
+}
+
+QString GroupAnt::toString(){
+    QString a;
+    if(type == Nanny) a = "няня";
+    else if( type == Solider) a = "солдат";
+    else a = "Фуражир\nГрузоподъемность: " + QString::number(maxResource*3);
+    return "Имя: " + name +
+            "\nВозраст: " + QString::number(age) +
+            "\nЗдоровье: " + QString::number(health.second) +
+            "/" + QString::number(health.first) +
+            "\nЧисленность: " + QString::number(countOfAnts) +
+            "\nСпециальность: " + a;
+
 }
 
 bool GroupAnt::checkAge(){

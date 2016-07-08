@@ -19,12 +19,14 @@ public slots:
     void saveS();
     void newS();
     void overS();
+    void exitS();
 signals:
     void loadSig();
     void saveSig();
     void newSig();
     void overSig();
     void closed();
+    void exitSig();
 public:
     explicit menu(QWidget *parent = 0);
     ~menu();

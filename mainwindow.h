@@ -24,17 +24,24 @@ public slots:
     void saveS();
     void newS();
     void overS();
+    void exitS();
     void openMenu();
     void closeMenu();
     void nextStep();
     void changeViewMode();
     void sectorAntHill(int a);
     void addSectAH(int, int );
+    void enterAH(int);
+    void leaveAH();
+    void leaveW();
+    void enterW(int);
 signals:
 
 public:
     void disableButtons();
     void enableButtons();
+    void refreshStore();
+    void clearStore();
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 

@@ -3,5 +3,6 @@
         <file>data/img/icon.png</file>
         <file>data/img/background.jpg</file>
         <file>data/img/sceneback.jpg</file>
+        <file>data/img/world.png</file>
     </qresource>
 </RCC>

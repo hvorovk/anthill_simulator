@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>info</class>
- <widget class="QDialog" name="info">
+ <author/>
+ <comment/>
+ <exportmacro/>
+ <class>SetSector</class>
+ <widget name="SetSector" class="QDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,35 +15,30 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="button">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
-     </property>
-     <property name="centerButtons">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <widget name="buttonBox" class="QDialogButtonBox">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>240</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
  </widget>
+ <pixmapfunction/>
  <resources/>
  <connections>
   <connection>
-   <sender>button</sender>
+   <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>info</receiver>
+   <receiver>SetSector</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -55,9 +52,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>button</sender>
+   <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>info</receiver>
+   <receiver>SetSector</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

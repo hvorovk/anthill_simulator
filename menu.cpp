@@ -13,6 +13,7 @@ menu::menu(QWidget *parent) :
     connect(ui->saveSim,SIGNAL(clicked()),this,SLOT(saveS()));
     connect(ui->overSim,SIGNAL(clicked()),this,SLOT(overS()));
     connect(ui->exit,SIGNAL(clicked()),this,SLOT(close()));
+    connect(ui->exit_2,SIGNAL(clicked()),this,SLOT(exitS()));
 }
 
 void menu::loadS(){
@@ -37,6 +38,10 @@ void menu::overS(){
     //Конец работы всей програмы
     emit overSig();
     close();
+}
+
+void menu::exitS(){
+    emit exitSig();
 }
 
 void menu::closeEvent(QCloseEvent *event){

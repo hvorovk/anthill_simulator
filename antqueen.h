@@ -14,6 +14,7 @@ public:
     bool checkAge();
     int getProduct(){return productivityOnStep;}
     int getLevel(){return level;}
+    QString toString();
     AntQueen(QString name);
 };
 

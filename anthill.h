@@ -33,9 +33,11 @@ class MapItemAH:public QObject, public QGraphicsEllipseItem{
 signals:
     //передает позицию
     clicked(int p);
-private:
+    enter(int);
+    leave();
+protected:
     int id;
-    QColor alpha;
+    QColor color;
     bool busy;
 public:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -56,7 +58,7 @@ public:
     MapItemAH(int x,int y,int w,int h, int i = 0, QColor a = Qt::white):QGraphicsEllipseItem(x,y,w,h){
         setAcceptHoverEvents(true);
         busy = false;
-        alpha = a;
+        color = a;
         setOpacity(0.6);
         setBrush(*new QBrush(a));
         id = i;
@@ -66,22 +68,22 @@ public:
 struct MapOfAntHill{
     //Карта муравейника
     QVector<TypeOfSector> map;
-    QVector<QPair<Ant*,int> > antLocation;
+    QVector<QPair<GroupAnt*,int> > antLocation;
     QVector<MapItemAH*> items;
     int sectorCount;
 
-    MapOfAntHill(AntQueen *a,GroupAnt *b){
+    MapOfAntHill(GroupAnt *b){
         sectorCount = 2;
-        antLocation.append(QPair<Ant*,int>(a,0));
-        antLocation.append(QPair<Ant*,int>(b,1));
+
+        antLocation.append(QPair<GroupAnt*,int>(b,1));
         for(int i = 0; i < MAP_SIZE_H; i++){
             for(int j = 0; j < MAP_SIZE_W; j++){
                 items.append(new MapItemAH(50*j, 50*i,50,50,i*12+j));
                 map.append(NONE);
             }
-            map[0] = QUEEN;
-            map[1] = POSTERITY;
         }
+        map[0] = QUEEN;
+        map[1] = POSTERITY;
         items[0]->setBusy(true); items[1]->setBusy(true);
         items[0]->setColor(map[0]); items[1]->setColor(map[1]);
     }
@@ -96,13 +98,25 @@ private:
     AntQueen *queen;
     QVector<GroupAnt*> ants;
     QPair<int,int> storeWater, storeFood, storeMaterials;
-    int storeAll, level;
+    int storeAll, level, poster;
     QPair<double,double>  health;
     double armor;
     MapOfAntHill *map;
     QVector<GroupAnt*> freeAnts;
 public:
+    QString toString();
+    QString getTextSector(int i);
     AntHill(QString);
+    QPair<int,int> getWater(){
+        return storeWater;
+    }
+    QPair<int,int> getFood(){
+        return storeFood;
+    }
+    QPair<int,int> getMater(){
+        return storeMaterials;
+    }
+
     QGraphicsScene* getScene(){
         return scene;
     }
