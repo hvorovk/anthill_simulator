@@ -19,10 +19,33 @@ AntHill::AntHill(QString n){
     foreach (auto a, map->items) {
         scene->addItem(a);
     }
+    countActivePosterity = 1;
+    reproduct = 1;
+}
+
+void AntHill::nextStep(){
+    storeFood.second -= (ants.length() + 1);
+    storeWater.second -= (ants.length() + 1);
+    queen->incAge();
+    foreach (GroupAnt* i, ants) {
+        i->incAge();
+    }
+    reproduct = queen->getProduct()*countActivePosterity;
+}
+
+void AntHill::repr(Type a){
+    reproduct -= 1;
+    freeAnts.append(new GroupAnt(QString::number(rand()),a));
 }
 
 void AntHill::addSector(TypeOfSector type, int p){
     storeMaterials.second -=5;
+    if(type == STORAGE) {
+        storeAll += 15;
+        storeFood.first += 5;
+        storeWater.first += 5;
+        storeMaterials.first += 5;
+    }
     map->map[p] = type;
     map->items[p]->setBusy(true);
     map->items[p]->setColor(type);
@@ -30,12 +53,12 @@ void AntHill::addSector(TypeOfSector type, int p){
 }
 
 int AntHill::attack(int attack){
-   health.second -= attack - armorEffect(attack);
-   int attackReturn = queen->getAttack() ;
-   foreach (GroupAnt* i, ants) {
-       if(i->onAntHill()) attackReturn +=i->getAttack();
-   }
-   return attackReturn;
+    health.second -= attack - armorEffect(attack);
+    int attackReturn = queen->getAttack() ;
+    foreach (GroupAnt* i, ants) {
+        if(i->onAntHill()) attackReturn +=i->getAttack();
+    }
+    return attackReturn;
 }
 
 QString AntHill::getTextSector(int i){
@@ -46,24 +69,14 @@ QString AntHill::getTextSector(int i){
     else if(map->map[i] == STORAGE)
         out += "Это хранилище,\n повышает общую\nвместимость на\n15 единиц";
     else if(map->map[i] == DEFENSE){
-        GroupAnt *a = nullptr;
-        for(int j = 0; j < map->antLocation.length();j++){
-           if(map->antLocation[j].second == i){
-               a = map->antLocation[j].first;
-           }
-        }
+        GroupAnt *a = map->antLocation[i];
         out += "Это клетка солдат";
         if(a == nullptr) out += "\nЗдесь ни  кого нет.";
         else out += "\n+1 к защите\n" + a->toString();
     }
     else if(map->map[i] == POSTERITY){
-        GroupAnt *a = nullptr;
+        GroupAnt *a = map->antLocation[i];
         out += "Это клетка родильни\n";
-        for(int j = 0; j < map->antLocation.length();j++){
-           if(map->antLocation[j].second == i){
-               a = map->antLocation[j].first;
-           }
-        }
         if(a!=nullptr) out += a->toString();
     }
     else
@@ -81,34 +94,31 @@ QString AntHill::toString(){
     return out;
 }
 
-
-void AntHill::nextStep(){
-
-}
-
 void MapItemAH::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    if(event->button() == Qt::LeftButton){
-       if(color == Qt::white) setBrush(*new QBrush(Qt::gray));
-       else if(color == Qt::yellow) setBrush(*new QBrush(QColor(150,150,0)));
-       else if(color == Qt::blue) setBrush(*new QBrush(QColor(0,0,150)));
-       else if(color == Qt::green) setBrush(*new QBrush(QColor(0,150,0)));
-       else setBrush(*new QBrush(QColor(150,0,0)));
-    }
+
+    if(color == Qt::white) setBrush(*new QBrush(Qt::gray));
+    else if(color == Qt::yellow) setBrush(*new QBrush(QColor(150,150,0)));
+    else if(color == Qt::blue) setBrush(*new QBrush(QColor(0,0,150)));
+    else if(color == Qt::green) setBrush(*new QBrush(QColor(0,150,0)));
+    else setBrush(*new QBrush(QColor(150,0,0)));
+    if(event->button() == Qt::RightButton &&
+            (color != Qt::yellow && color != Qt::blue && color != Qt::white))
+        emit change(id);
 }
 
 void MapItemAH::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
     setBrush(*new QBrush(color));
-    emit clicked(id);
+    if(event->button() == Qt::LeftButton) emit clicked(id);
 }
 
 void MapItemAH::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
-   setOpacity(0.9);
-   emit enter(id);
+    setOpacity(0.9);
+    emit enter(id);
 }
 
 void MapItemAH::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
-   setOpacity(0.6);
-   emit leave();
+    setOpacity(0.6);
+    emit leave();
 }
 
 void MapItemAH::setColor(TypeOfSector a){

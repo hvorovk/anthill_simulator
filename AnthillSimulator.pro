@@ -22,7 +22,9 @@ SOURCES += main.cpp\
     antqueen.cpp \
     antmale.cpp \
     sectordialog.cpp \
-    setsector.cpp
+    setsector.cpp \
+    setant.cpp \
+    makeant.cpp
 
 HEADERS  += mainwindow.h \
     menu.h \
@@ -33,12 +35,16 @@ HEADERS  += mainwindow.h \
     antqueen.h \
     antmale.h \
     sectordialog.h \
-    setsector.h
+    setsector.h \
+    setant.h \
+    makeant.h
 
 FORMS    += mainwindow.ui \
     menu.ui \
     sectordialog.ui \
-    setsector.ui
+    setsector.ui \
+    setant.ui \
+    makeant.ui
 
 RESOURCES += \
     resource.qrc

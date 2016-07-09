@@ -14,6 +14,8 @@ menu::menu(QWidget *parent) :
     connect(ui->overSim,SIGNAL(clicked()),this,SLOT(overS()));
     connect(ui->exit,SIGNAL(clicked()),this,SLOT(close()));
     connect(ui->exit_2,SIGNAL(clicked()),this,SLOT(exitS()));
+    ui->loadSim->hide();
+    ui->saveSim->hide();
 }
 
 void menu::loadS(){

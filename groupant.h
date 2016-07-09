@@ -21,7 +21,9 @@ private:
     Type type;
     int maxResource;
 public:
+    int getRes(){return maxResource;}
     QString toString();
+    QString getName(){return name;}
     void setWhere(bool a){where = a;}
     bool onAntHill(){return where;}
     GroupAnt(QString name, Type type);

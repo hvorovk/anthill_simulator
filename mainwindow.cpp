@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "QMessageBox"
+#include <time.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,11 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(alpha,SIGNAL(closed()),this,SLOT(closeMenu()));
 
     connect(ui->menu,SIGNAL(clicked()),this,SLOT(openMenu()));
+    connect(ui->addAnt,SIGNAL(clicked()),this,SLOT(makeAnt()));
     connect(ui->step,SIGNAL(clicked()),this,SLOT(nextStep()));
     connect(ui->viewMode,SIGNAL(clicked()),this,SLOT(changeViewMode()));
 
     clearStore();
     disableButtons();
+    srand(time(0));
+
 }
 
 void MainWindow::loadS(){
@@ -38,7 +42,27 @@ void MainWindow::saveS(){
 
 void MainWindow::nextStep(){
     //Новый шаг симуляции
-    antHill->nextStep();
+    step++;
+    world->nextStep();
+    ui->label->setText("Шаг: " + QString::number(step));
+    refreshStore();
+    refreshRepr();
+    ui->addAnt->setEnabled(true);
+}
+
+void MainWindow::AntMake(Type a){
+    antHill->repr(a);
+    refreshRepr();
+    if(antHill->getRepr() == 0) ui->addAnt->setDisabled(true);
+}
+
+void MainWindow::refreshRepr(){
+    ui->prod->setText("Очков воспроизводства: " + QString::number(antHill->getRepr()) +
+                      "\nСвободных муравьев: " + QString::number(antHill->getFree().length()));
+}
+
+void MainWindow::makeAnt(){
+    make->show();
 }
 
 void MainWindow::exitS(){
@@ -50,6 +74,7 @@ void MainWindow::addSectAH(int a,int b){
     switch (a) {
     case 0:
         antHill->addSector(STORAGE,b);
+        refreshStore();
         break;
     case 1:
         antHill->addSector(POSTERITY,b);
@@ -62,23 +87,61 @@ void MainWindow::addSectAH(int a,int b){
 
 void MainWindow::newS(){
     //Новая сессия
+    make = new MakeAnt();
+    step = 0;
     antHill = new AntHill("anthill");
     world = new World(antHill);
     add = new SectorDialog();
+    addW = new SetSector();
+    set = new setAnt();
     foreach (auto a, antHill->getButtons()) {
+        connect(a,SIGNAL(change(int)),this,SLOT(change(int)));
         connect(a,SIGNAL(clicked(int)),this,SLOT(sectorAntHill(int)));
         connect(a,SIGNAL(enter(int)),this,SLOT(enterAH(int)));
         connect(a,SIGNAL(leave()),this,SLOT(leaveAH()));
     }
     foreach (auto a, world->getButtons()) {
-        //connect(a,SIGNAL(clicked(int)),this,SLOT(sectorAntHill(int)));
+        connect(a,SIGNAL(clicked(int)),this,SLOT(sectorWorld(int)));
         connect(a,SIGNAL(enter(int)),this,SLOT(enterW(int)));
         connect(a,SIGNAL(leave()),this,SLOT(leaveW()));
+        connect(a,SIGNAL(rem(int)),this,SLOT(remove(int)));
     }
+    connect(set,SIGNAL(sig(GroupAnt*,int)),this,SLOT(addAnt(GroupAnt*,int)));
     connect(add,SIGNAL(sig(int,int)),this,SLOT(addSectAH(int,int)));
+    connect(addW,SIGNAL(set(GroupAnt*,int)),this,SLOT(setSecW(GroupAnt*,int)));
+    connect(make,SIGNAL(sig(Type)),this,SLOT(AntMake(Type)));
     ui->generalScene->setScene(antHill->getScene());
     enableButtons();
+    ui->label->setText("Шаг: 0");
     refreshStore();
+    refreshRepr();
+}
+
+void MainWindow::change(int i){
+    set->clear();
+    set->get(antHill->getFree(),i,antHill->getAnt(i),antHill->getType(i));
+    set->show();
+}
+
+void MainWindow::addAnt(GroupAnt* a, int pos){
+    antHill->setAnt(a,pos);
+    refreshRepr();
+}
+
+void MainWindow::remove(int i){
+    world->remove(world->getAnt(i));
+    refreshRepr();
+}
+
+void MainWindow::setSecW(GroupAnt* a,int b){
+
+    world->add(a,b);
+    refreshRepr();
+}
+
+void MainWindow::sectorWorld(int a){
+    addW->get(antHill->getFree(),a,world->getAnt(a));
+    addW->show();
 }
 
 void MainWindow::overS(){
@@ -116,12 +179,12 @@ void MainWindow::clearStore(){
 void MainWindow::sectorAntHill(int a){
     if(antHill->getButtons()[a]->onBusy()){
 
-    }else if(antHill->getMat()>=5){
+    }else if(antHill->getMater().second>=5){
         add->add(a);
         add->show();
     }else{
         (new QMessageBox(QMessageBox::Warning,"Нет ресурсов","Не хватает " +
-                         QString::number(5-antHill->getMat())+
+                         QString::number(5-antHill->getMater().second)+
                          " ресурсов на постройку ячейки муравейника."))->show();
     }
 }
@@ -138,11 +201,13 @@ void MainWindow::enableButtons(){
     //Включение основных кнопок управления на основной форме
     ui->step->setEnabled(true);
     ui->viewMode->setEnabled(true);
+    ui->addAnt->setEnabled(true);
 }
 
 void MainWindow::disableButtons(){
     //Отключение основных кнопок управния на основной форме
     ui->step->setDisabled(true);
+    ui->addAnt->setDisabled(true);
     ui->viewMode->setDisabled(true);
 }
 

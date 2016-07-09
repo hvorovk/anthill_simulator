@@ -35,25 +35,15 @@ signals:
     clicked(int p);
     enter(int);
     leave();
+    rem(int a);
+    change(int i);
 protected:
     int id;
     QColor color;
     bool busy;
 public:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     MapItemAH():QGraphicsEllipseItem(){
     }
-
-    void setColor(TypeOfSector);
-
-    void setBusy(bool b){
-        busy = b;
-    }
-
-    bool onBusy(){return busy;}
 
     MapItemAH(int x,int y,int w,int h, int i = 0, QColor a = Qt::white):QGraphicsEllipseItem(x,y,w,h){
         setAcceptHoverEvents(true);
@@ -63,25 +53,37 @@ public:
         setBrush(*new QBrush(a));
         id = i;
     }
+
+    void setBusy(bool b){
+        busy = b;
+    }
+
+    bool onBusy(){return busy;}
+
+    void setColor(TypeOfSector);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 };
 
 struct MapOfAntHill{
     //Карта муравейника
     QVector<TypeOfSector> map;
-    QVector<QPair<GroupAnt*,int> > antLocation;
+    QVector<GroupAnt*> antLocation;
     QVector<MapItemAH*> items;
     int sectorCount;
 
     MapOfAntHill(GroupAnt *b){
         sectorCount = 2;
-
-        antLocation.append(QPair<GroupAnt*,int>(b,1));
         for(int i = 0; i < MAP_SIZE_H; i++){
             for(int j = 0; j < MAP_SIZE_W; j++){
                 items.append(new MapItemAH(50*j, 50*i,50,50,i*12+j));
                 map.append(NONE);
+                antLocation.append(nullptr);
             }
         }
+        antLocation[1] = b;
         map[0] = QUEEN;
         map[1] = POSTERITY;
         items[0]->setBusy(true); items[1]->setBusy(true);
@@ -93,6 +95,7 @@ class AntHill
 {
 private:
     constexpr static int BASE_HP = 100, BASE_STORAGE = 150;
+    int reproduct, countActivePosterity;
     QGraphicsScene *scene;
     QString name;
     AntQueen *queen;
@@ -104,35 +107,55 @@ private:
     MapOfAntHill *map;
     QVector<GroupAnt*> freeAnts;
 public:
+    void addStore(int f, int w, int m){
+        storeFood.second += f;
+        storeWater.second += w;
+        storeMaterials.second += m;
+        if(storeFood.second>storeFood.first) storeFood.second = storeFood.first;
+        if(storeWater.second>storeWater.first) storeWater.second = storeWater.first;
+        if(storeMaterials.second>storeMaterials.first) storeMaterials.second = storeMaterials.first;
+    }
+
+    void addFree(GroupAnt* a){
+        //Добавить к свободным
+        freeAnts.append(a);
+    }
+
+    void remFree(GroupAnt *a){
+        //Удалить из свободных муравья
+        freeAnts.removeOne(a);
+    }
+
+    void setAnt(GroupAnt *a, int pos){
+        //Поставить муравья на внутреннюю ячейку муравейника
+        remFree(a);
+        if(map->antLocation[pos] == nullptr) map->antLocation[pos] = a;
+        else{
+            addFree(map->antLocation[pos]);
+            map->antLocation[pos] = a;
+            if(a->getType() == Nanny) countActivePosterity -= 1;
+        }
+        if(a->getType() == Nanny) countActivePosterity += 1;
+    }
+
     QString toString();
     QString getTextSector(int i);
     AntHill(QString);
-    QPair<int,int> getWater(){
-        return storeWater;
-    }
-    QPair<int,int> getFood(){
-        return storeFood;
-    }
-    QPair<int,int> getMater(){
-        return storeMaterials;
-    }
-
-    QGraphicsScene* getScene(){
-        return scene;
-    }
-    QVector<MapItemAH*> getButtons(){return map->items;}
-    void addSector(TypeOfSector type, int p);
-
-    int attack(int);
-
-    int getMat(){ return storeMaterials.second;}
-
-    int armorEffect(int attack){
-        return (attack*sqrt(armor*10))/100;
-    }
-
     void nextStep();
+    void addSector(TypeOfSector type, int p);
+    int attack(int);
+    void repr(Type);
 
+    int getRepr(){return reproduct;}
+    GroupAnt* getAnt(int pos){return map->antLocation[pos];}
+    TypeOfSector getType(int pos){return map->map[pos];}
+    QVector<GroupAnt*> getFree(){ return freeAnts;}
+    QPair<int,int> getWater(){return storeWater;}
+    QPair<int,int> getFood(){return storeFood;}
+    QPair<int,int> getMater(){return storeMaterials;}
+    QGraphicsScene* getScene(){return scene;}
+    QVector<MapItemAH*> getButtons(){return map->items;}
+    int armorEffect(int attack){return (attack*sqrt(armor*10))/100;}
 };
 
 #endif // ANTHILL_H

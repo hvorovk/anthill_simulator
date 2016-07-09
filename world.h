@@ -30,12 +30,17 @@ public:
         else if(color == Qt::blue) return 1;
         else return 2;
     }
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+        setBrush(*new QBrush(color));
+        if(event->button() == Qt::LeftButton && color != Qt::green) emit clicked(id);
+    }
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event){
-        if(event->button() == Qt::LeftButton){
-           if(color == Qt::white) setBrush(*new QBrush(Qt::gray));
-           else if(color == Qt::blue) setBrush(*new QBrush(QColor(0,0,150)));
-           else if(color == Qt::green) setBrush(*new QBrush(QColor(0,150,0)));
+        if(color == Qt::white) setBrush(*new QBrush(Qt::gray));
+        else if(color == Qt::blue) setBrush(*new QBrush(QColor(0,0,150)));
+        else if(color == Qt::green) setBrush(*new QBrush(QColor(0,150,0)));
+        if(event->button() == Qt::RightButton && color != Qt::green){
+            emit rem(id);
         }
     }
 };
@@ -79,6 +84,9 @@ private:
     AntHill *antHill;
     MapOfWorld *map;
 public:
+    GroupAnt* getAnt(int i){return map->busyOfAnt[i];}
+    void remove(GroupAnt*);
+    void add(GroupAnt*, int p);
     QString getTextSector(int);
     QGraphicsScene* getScene(){return scene;}
     QVector<MapItemW*> getButtons(){return map->items;}

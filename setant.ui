@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SetSector</class>
- <widget class="QDialog" name="SetSector">
+ <class>setAnt</class>
+ <widget class="QDialog" name="setAnt">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>184</width>
-    <height>116</height>
+    <height>120</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,40 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Муравьи в ячейке.</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>ID:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
-       </property>
-       <item>
-        <property name="text">
-         <string>Нет муравьев.</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QComboBox" name="comboBox"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -70,7 +37,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>SetSector</receiver>
+   <receiver>setAnt</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -86,7 +53,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>SetSector</receiver>
+   <receiver>setAnt</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
