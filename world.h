@@ -56,6 +56,7 @@ struct SectorCharacteristic{
 
 struct MapOfWorld{
     QVector<MapItemW*> items;
+    int sectorCount;
     QVector<SectorCharacteristic*>charactOfSectors;
     QVector<GroupAnt*> busyOfAnt;
     int antHillLocate;
@@ -71,6 +72,7 @@ struct MapOfWorld{
                 busyOfAnt.append(nullptr);
             }
         }
+        sectorCount = 1;
         antHillLocate = 0;
         items[0]->setColor(2);
     }
@@ -84,6 +86,7 @@ private:
     AntHill *antHill;
     MapOfWorld *map;
 public:
+    int getCount(){return map->sectorCount;}
     GroupAnt* getAnt(int i){return map->busyOfAnt[i];}
     void remove(GroupAnt*);
     void add(GroupAnt*, int p);

@@ -5,15 +5,14 @@
 #define GROUPANT_H
 #include "ant.h"
 
-enum Type{
+enum class Type{
     //Тип рабочего
     Forager = 0,
     Solider,
     Nanny
 };
 
-class GroupAnt:public Ant
-{
+class GroupAnt:public Ant {
 private:
     constexpr static int MAX_AGE = 24, BASE_HP = 0.1, REGEN = 0.1, MAX_RES = 5;
     int countOfAnts;

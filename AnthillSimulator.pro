@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     sectordialog.cpp \
     setsector.cpp \
     setant.cpp \
-    makeant.cpp
+    makeant.cpp \
+    help.cpp
 
 HEADERS  += mainwindow.h \
     menu.h \
@@ -37,14 +38,18 @@ HEADERS  += mainwindow.h \
     sectordialog.h \
     setsector.h \
     setant.h \
-    makeant.h
+    makeant.h \
+    help.h
 
 FORMS    += mainwindow.ui \
     menu.ui \
     sectordialog.ui \
     setsector.ui \
     setant.ui \
-    makeant.ui
+    makeant.ui \
+    help.ui
 
 RESOURCES += \
     resource.qrc
+
+QMAKE_LFLAGS_RELEASE += -static -static-libgcc

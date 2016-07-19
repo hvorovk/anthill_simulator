@@ -14,7 +14,7 @@ void SetSector::get(QVector<GroupAnt *> free,int pos,GroupAnt *curr){
     if(curr != nullptr) ui->comboBox->addItem(curr->getName());
     else ui->comboBox->addItem("Пусто");
     foreach (auto i, free) {
-        if(i->getType() == Forager){
+        if(i->getType() == Type::Forager){
             ui->comboBox->addItem(i->getName());
             this->free.append(i);
         }

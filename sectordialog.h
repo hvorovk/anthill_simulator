@@ -12,7 +12,7 @@ class SectorDialog : public QDialog
 {
     Q_OBJECT
 signals:
-    sig(int a,int q);
+    sig(TypeOfSector a,int q);
 public:
     explicit SectorDialog(QWidget *parent = 0);
     ~SectorDialog();

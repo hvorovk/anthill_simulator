@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //Инициализация полей
     alpha = new menu();
+    make = new MakeAnt();
     //Установка связей
     connect(alpha,SIGNAL(loadSig()),this,SLOT(loadS()));
     connect(alpha,SIGNAL(saveSig()),this,SLOT(saveS()));
@@ -20,14 +21,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(alpha,SIGNAL(closed()),this,SLOT(closeMenu()));
 
     connect(ui->menu,SIGNAL(clicked()),this,SLOT(openMenu()));
-    connect(ui->addAnt,SIGNAL(clicked()),this,SLOT(makeAnt()));
+    connect(ui->addAnt,SIGNAL(clicked()),make,SLOT(show()));
     connect(ui->step,SIGNAL(clicked()),this,SLOT(nextStep()));
     connect(ui->viewMode,SIGNAL(clicked()),this,SLOT(changeViewMode()));
 
     clearStore();
     disableButtons();
     srand(time(0));
-
 }
 
 void MainWindow::loadS(){
@@ -48,6 +48,16 @@ void MainWindow::nextStep(){
     refreshStore();
     refreshRepr();
     ui->addAnt->setEnabled(true);
+
+    if(world->getCount() == 96 && antHill->getCount() == 96){
+        (new QMessageBox(QMessageBox::NoIcon,"Выйгрыш",
+    "Вы захватили все игровое пространнство!\nЭто было очень круто!"))->show();
+    }
+    if(antHill->getFood().second < 0 && antHill->getWater().second > 0){
+        (new QMessageBox(QMessageBox::Critical,"Проигрыш",
+    "Муравейник погиб из-за голода!"))->show();
+        overS();
+    }
 }
 
 void MainWindow::AntMake(Type a){
@@ -61,33 +71,18 @@ void MainWindow::refreshRepr(){
                       "\nСвободных муравьев: " + QString::number(antHill->getFree().length()));
 }
 
-void MainWindow::makeAnt(){
-    make->show();
-}
-
 void MainWindow::exitS(){
     //Завершение всей программы
     exit(0);
 }
 
-void MainWindow::addSectAH(int a,int b){
-    switch (a) {
-    case 0:
-        antHill->addSector(STORAGE,b);
-        refreshStore();
-        break;
-    case 1:
-        antHill->addSector(POSTERITY,b);
-        break;
-    case 2:
-        antHill->addSector(DEFENSE,b);
-    }
+void MainWindow::addSectAH(TypeOfSector a,int b){
+    antHill->addSector(a,b);
     refreshStore();
 }
 
 void MainWindow::newS(){
     //Новая сессия
-    make = new MakeAnt();
     step = 0;
     antHill = new AntHill("anthill");
     world = new World(antHill);
@@ -95,21 +90,20 @@ void MainWindow::newS(){
     addW = new SetSector();
     set = new setAnt();
     foreach (auto a, antHill->getButtons()) {
-        connect(a,SIGNAL(change(int)),this,SLOT(change(int)));
-        connect(a,SIGNAL(clicked(int)),this,SLOT(sectorAntHill(int)));
+        connect(a,SIGNAL(callToChange(int)),this,SLOT(callToChange(int)));
+        connect(a,SIGNAL(clicked(int)),this,SLOT(sectorAH(int)));
         connect(a,SIGNAL(enter(int)),this,SLOT(enterAH(int)));
         connect(a,SIGNAL(leave()),this,SLOT(leaveAH()));
     }
     foreach (auto a, world->getButtons()) {
-        connect(a,SIGNAL(clicked(int)),this,SLOT(sectorWorld(int)));
+        connect(a,SIGNAL(clicked(int)),this,SLOT(sectorW(int)));
         connect(a,SIGNAL(enter(int)),this,SLOT(enterW(int)));
         connect(a,SIGNAL(leave()),this,SLOT(leaveW()));
         connect(a,SIGNAL(rem(int)),this,SLOT(remove(int)));
     }
-    connect(set,SIGNAL(sig(GroupAnt*,int)),this,SLOT(addAnt(GroupAnt*,int)));
-    connect(add,SIGNAL(sig(int,int)),this,SLOT(addSectAH(int,int)));
-    connect(addW,SIGNAL(set(GroupAnt*,int)),this,SLOT(setSecW(GroupAnt*,int)));
-    connect(make,SIGNAL(sig(Type)),this,SLOT(AntMake(Type)));
+    connect(set,SIGNAL(sig(GroupAnt*,int)),this,SLOT(setAntAH(GroupAnt*,int)));
+    connect(add,SIGNAL(sig(TypeOfSector,int)),this,SLOT(addSectAH(TypeOfSector,int)));
+    connect(addW,SIGNAL(set(GroupAnt*,int)),this,SLOT(setAntW(GroupAnt*,int)));
     ui->generalScene->setScene(antHill->getScene());
     enableButtons();
     ui->label->setText("Шаг: 0");
@@ -117,13 +111,13 @@ void MainWindow::newS(){
     refreshRepr();
 }
 
-void MainWindow::change(int i){
+void MainWindow::callToChange(int i){
     set->clear();
     set->get(antHill->getFree(),i,antHill->getAnt(i),antHill->getType(i));
     set->show();
 }
 
-void MainWindow::addAnt(GroupAnt* a, int pos){
+void MainWindow::setAntAH(GroupAnt* a, int pos){
     antHill->setAnt(a,pos);
     refreshRepr();
 }
@@ -133,13 +127,12 @@ void MainWindow::remove(int i){
     refreshRepr();
 }
 
-void MainWindow::setSecW(GroupAnt* a,int b){
-
+void MainWindow::setAntW(GroupAnt* a,int b){
     world->add(a,b);
     refreshRepr();
 }
 
-void MainWindow::sectorWorld(int a){
+void MainWindow::sectorW(int a){
     addW->get(antHill->getFree(),a,world->getAnt(a));
     addW->show();
 }
@@ -148,13 +141,27 @@ void MainWindow::overS(){
     disableButtons();
     ui->generalScene->setScene(new QGraphicsScene());
     foreach (auto a, antHill->getButtons()) {
-        disconnect(a,SIGNAL(clicked(int)),this,SLOT(sectorAntHill(int)));
+        disconnect(a,SIGNAL(callToChange(int)),this,SLOT(callToChange(int)));
+        disconnect(a,SIGNAL(clicked(int)),this,SLOT(sectorAH(int)));
+        disconnect(a,SIGNAL(enter(int)),this,SLOT(enterAH(int)));
+        disconnect(a,SIGNAL(leave()),this,SLOT(leaveAH()));
     }
-    disconnect(add,SIGNAL(sig(int,int)),this,SLOT(addSectAH(int,int)));
+    foreach (auto a, world->getButtons()) {
+        disconnect(a,SIGNAL(clicked(int)),this,SLOT(sectorW(int)));
+        disconnect(a,SIGNAL(enter(int)),this,SLOT(enterW(int)));
+        disconnect(a,SIGNAL(leave()),this,SLOT(leaveW()));
+        disconnect(a,SIGNAL(rem(int)),this,SLOT(remove(int)));
+    }
+    disconnect(set,SIGNAL(sig(GroupAnt*,int)),this,SLOT(setAntAH(GroupAnt*,int)));
+    disconnect(add,SIGNAL(sig(TypeOfSector,int)),this,SLOT(addSectAH(TypeOfSector,int)));
+    disconnect(addW,SIGNAL(set(GroupAnt*,int)),this,SLOT(setAntW(GroupAnt*,int)));
     delete antHill;
     delete world;
     delete add;
+    delete addW;
+    delete set;
     clearStore();
+    ui->label->setText("Шаг: NaN");
     ui->info->clear();
 }
 
@@ -176,9 +183,9 @@ void MainWindow::clearStore(){
 }
 
 
-void MainWindow::sectorAntHill(int a){
+void MainWindow::sectorAH(int a){
     if(antHill->getButtons()[a]->onBusy()){
-
+        return;
     }else if(antHill->getMater().second>=5){
         add->add(a);
         add->show();
@@ -219,6 +226,7 @@ void MainWindow::refreshStore(){
     ui->mater->setText("Материалы: " + QString::number(antHill->getMater().second) +
                       "/" + QString::number(antHill->getMater().first));
 }
+
 void MainWindow::leaveW(){
     ui->info->clear();
 }

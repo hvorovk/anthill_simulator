@@ -16,7 +16,7 @@ SectorDialog::~SectorDialog()
 
 void SectorDialog::sigS(){
     QString a = ui->comboBox->currentText();
-    if(a == "Хранилище") sig(0,b);
-    else if(a == "Защита") sig(2,b);
-    else sig(1,b);
+    if(a == "Хранилище") sig(TypeOfSector::STORAGE,b);
+    else if(a == "Защита") sig(TypeOfSector::DEFENSE,b);
+    else sig(TypeOfSector::POSTERITY,b);
 }

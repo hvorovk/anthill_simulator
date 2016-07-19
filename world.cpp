@@ -30,6 +30,7 @@ void World::remove(GroupAnt* a){
         map->busyOfAnt[p] = nullptr;
         map->items[p]->setColor(0);
         antHill->addFree(a);
+        map->sectorCount -= 1;
     }
 }
 
@@ -42,6 +43,7 @@ void World::add(GroupAnt* a,int p){
         map->busyOfAnt[p] = a;
     }
     map->items[p]->setColor(1);
+    map->sectorCount += 1;
 }
 
 void World::nextStep(){

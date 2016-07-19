@@ -15,13 +15,13 @@ MakeAnt::MakeAnt(QWidget *parent) :
 void MakeAnt::alpha(){
     switch(ui->comboBox->currentIndex()){
     case 0:
-        emit sig(Forager);
+        emit sig(Type::Forager);
         break;
     case 1:
-        emit sig(Nanny);
+        emit sig(Type::Nanny);
         break;
     case 2:
-        emit sig(Solider);
+        emit sig(Type::Solider);
     }
 }
 

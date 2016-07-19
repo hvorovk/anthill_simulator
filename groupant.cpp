@@ -14,8 +14,8 @@ GroupAnt::GroupAnt(QString n,Type type){
 
 QString GroupAnt::toString(){
     QString a;
-    if(type == Nanny) a = "няня";
-    else if( type == Solider) a = "солдат";
+    if(type == Type::Nanny) a = "няня";
+    else if( type == Type::Solider) a = "солдат";
     else a = "Фуражир\nГрузоподъемность: " + QString::number(maxResource*3);
     return "Имя: " + name +
             "\nВозраст: " + QString::number(age) +

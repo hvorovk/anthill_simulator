@@ -31,18 +31,17 @@ public slots:
     void closeMenu();
     void nextStep();
     void changeViewMode();
-    void sectorAntHill(int a);
-    void sectorWorld(int a);
-    void addSectAH(int, int );
+    void sectorAH(int a);
+    void sectorW(int a);
+    void addSectAH(TypeOfSector, int );
     void enterAH(int);
     void leaveAH();
     void leaveW();
-    void setSecW(GroupAnt*,int);
+    void setAntW(GroupAnt*,int);
     void enterW(int);
     void remove(int);
-    void change(int);
-    void addAnt(GroupAnt*,int);
-    void makeAnt();
+    void callToChange(int);
+    void setAntAH(GroupAnt*,int);
     void AntMake(Type a);
 signals:
 

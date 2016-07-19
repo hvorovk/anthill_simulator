@@ -20,6 +20,7 @@ public slots:
     void newS();
     void overS();
     void exitS();
+    void help();
 signals:
     void loadSig();
     void saveSig();

@@ -11,9 +11,8 @@
 #include <QtCore>
 #include <antqueen.h>
 #include <groupant.h>
-#include <sectordialog.h>
 
-enum TypeOfSector{
+enum class TypeOfSector{
     //Типы секторов
     STORAGE = 0,
     POSTERITY = 1,
@@ -79,13 +78,13 @@ struct MapOfAntHill{
         for(int i = 0; i < MAP_SIZE_H; i++){
             for(int j = 0; j < MAP_SIZE_W; j++){
                 items.append(new MapItemAH(50*j, 50*i,50,50,i*12+j));
-                map.append(NONE);
+                map.append(TypeOfSector::NONE);
                 antLocation.append(nullptr);
             }
         }
         antLocation[1] = b;
-        map[0] = QUEEN;
-        map[1] = POSTERITY;
+        map[0] = TypeOfSector::QUEEN;
+        map[1] = TypeOfSector::POSTERITY;
         items[0]->setBusy(true); items[1]->setBusy(true);
         items[0]->setColor(map[0]); items[1]->setColor(map[1]);
     }
@@ -107,6 +106,7 @@ private:
     MapOfAntHill *map;
     QVector<GroupAnt*> freeAnts;
 public:
+    int getCount(){return map->sectorCount;}
     void addStore(int f, int w, int m){
         storeFood.second += f;
         storeWater.second += w;
@@ -133,9 +133,9 @@ public:
         else{
             addFree(map->antLocation[pos]);
             map->antLocation[pos] = a;
-            if(a->getType() == Nanny) countActivePosterity -= 1;
+            if(a->getType() == Type::Nanny) countActivePosterity -= 1;
         }
-        if(a->getType() == Nanny) countActivePosterity += 1;
+        if(a->getType() == Type::Nanny) countActivePosterity += 1;
     }
 
     QString toString();

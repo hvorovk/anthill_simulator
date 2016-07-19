@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "ui_menu.h"
 #include <QCloseEvent>
+#include "help.h"
 
 menu::menu(QWidget *parent) :
     QDialog(parent),
@@ -14,8 +15,13 @@ menu::menu(QWidget *parent) :
     connect(ui->overSim,SIGNAL(clicked()),this,SLOT(overS()));
     connect(ui->exit,SIGNAL(clicked()),this,SLOT(close()));
     connect(ui->exit_2,SIGNAL(clicked()),this,SLOT(exitS()));
+    connect(ui->help,SIGNAL(clicked()),this,SLOT(help()));
     ui->loadSim->hide();
     ui->saveSim->hide();
+}
+
+void menu::help(){
+    (new Help())->show();
 }
 
 void menu::loadS(){

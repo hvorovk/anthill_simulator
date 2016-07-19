@@ -14,8 +14,8 @@ void setAnt::get(QVector<GroupAnt*> all, int pos, GroupAnt* cur, TypeOfSector ty
     else ui->comboBox->addItem(cur->getName());
     this->pos = pos;
     Type temp;
-    if(type == POSTERITY) temp = Nanny;
-    else if(type == DEFENSE) temp = Solider;
+    if(type == TypeOfSector::POSTERITY) temp = Type::Nanny;
+    else if(type == TypeOfSector::DEFENSE) temp = Type::Solider;
     foreach (GroupAnt* i, all) {
         if(i->getType() == temp){
             ant.append(i);
